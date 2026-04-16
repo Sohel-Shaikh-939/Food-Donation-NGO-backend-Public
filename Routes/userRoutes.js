@@ -20,7 +20,7 @@ const location = async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
     const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?key=${process.env.LOC_KEY}&q=${latitude}%2C+${longitude}&pretty=1&no_annotations=1`
+      `https://api.opencagedata.com/geocode/v1/json?key=${process.env.LOC_KEY}&q=${latitude}%2C+${longitude}&pretty=1&no_annotations=1`,
     );
 
     if (response) {
@@ -57,7 +57,7 @@ const donate = async (req, res) => {
     if (food) {
       await userModel.findOneAndUpdate(
         { email: req.email },
-        { $push: { donations: { $each: [food._id], $position: 0 } } }
+        { $push: { donations: { $each: [food._id], $position: 0 } } },
       );
       return res.json({ status: true });
     }
@@ -111,7 +111,7 @@ const foodList = async (req, res) => {
       .skip(skipFood)
       .limit(4)
       .select(
-        "-_id -donorType -email -phone -packagingType -tip -claimer -storageRequirement"
+        "-_id -donorType -email -phone -packagingType -tip -claimer -storageRequirement",
       );
 
     return res.json({ status: true, data: list });
@@ -181,7 +181,7 @@ const cancelClaim = async (req, res) => {
     const user = await userModel.findOne({ email: req.email });
     if (food && user) {
       user.claimReservation = user.claimReservation.filter(
-        (id) => id.toString() !== food._id.toString()
+        (id) => id.toString() !== food._id.toString(),
       );
       await user.save();
       food.status = "Active";
@@ -294,11 +294,11 @@ const verifyOtp = async (req, res) => {
       if (isMatch) {
         await userModel.updateOne(
           { _id: donor._id },
-          { $pull: { donations: food._id }, $inc: { donated: 1 } }
+          { $pull: { donations: food._id }, $inc: { donated: 1 } },
         );
         await userModel.updateOne(
           { _id: claimer._id },
-          { $pull: { claimReservation: food._id }, $inc: { claimed: 1 } }
+          { $pull: { claimReservation: food._id }, $inc: { claimed: 1 } },
         );
         await foodModel.findOneAndDelete({ id: food.id });
 
@@ -322,13 +322,13 @@ const cancelDonation = async (req, res) => {
       if (food.claimer) {
         await userModel.findOneAndUpdate(
           { _id: food.claimer },
-          { $pull: { claimReservation: food._id } }
+          { $pull: { claimReservation: food._id } },
         );
       }
 
       await userModel.findOneAndUpdate(
         { email: req.email },
-        { $pull: { donations: food._id } }
+        { $pull: { donations: food._id } },
       );
       await foodModel.findOneAndDelete({ id: req.query.id });
       return res.json({ status: true });
@@ -348,7 +348,7 @@ const editProfile = async (req, res) => {
       { $set: { name: req.body.name, phone: req.body.phone } },
       {
         new: true,
-      }
+      },
     );
     if (user) {
       return res.json({

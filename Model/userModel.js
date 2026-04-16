@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
     },
     donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "food" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const userModel = mongoose.model("user", userSchema);
